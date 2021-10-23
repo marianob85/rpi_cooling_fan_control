@@ -4,14 +4,14 @@ import time
 import signal
 from datetime import datetime
 import logging
-from systemd.journal import JournalHandler
+from systemd.journal import JournaldLogHandler
 
 FAN_PORT = 17
 THRESHOLD = 65 #47
 HYSTERESIS = 15
 
 logger = logging.getLogger('fan')
-logger.addHandler(JournalHandler())
+logger.addHandler(JournaldLogHandler())
 logger.setLevel(logging.INFO)
 
 GPIO.setmode(GPIO.BCM)
@@ -28,21 +28,23 @@ def tidyup(msg, *args):
     log("Caught terminate signal. Cleanup fan off.")
     exit(0)
 
-signal.signal(signal.SIGINT, tidyup)
-signal.signal(signal.SIGTERM, tidyup)
+if __name__ == '__main__':
 
-log('Current temp: {}C'.format(CPUTemperature().temperature))
-while True:
-    cpu = CPUTemperature() 
+    signal.signal(signal.SIGINT, tidyup)
+    signal.signal(signal.SIGTERM, tidyup)
 
-    out = None
-    if cpu.temperature >= THRESHOLD:
-        out = 1
-    elif cpu.temperature <= THRESHOLD - HYSTERESIS:
-        out = 0
+    log('Current temp: {}C'.format(CPUTemperature().temperature))
+    while True:
+        cpu = CPUTemperature() 
 
-    if out != None and GPIO.input(FAN_PORT) != out:
-        log('FAN {} temp: {}C'.format('ON' if out else 'OFF', cpu.temperature))
-        GPIO.output(FAN_PORT, out)
+        out = None
+        if cpu.temperature >= THRESHOLD:
+            out = 1
+        elif cpu.temperature <= THRESHOLD - HYSTERESIS:
+            out = 0
 
-    time.sleep(1.0)
+        if out != None and GPIO.input(FAN_PORT) != out:
+            log('FAN {} temp: {}C'.format('ON' if out else 'OFF', cpu.temperature))
+            GPIO.output(FAN_PORT, out)
+
+        time.sleep(1.0)

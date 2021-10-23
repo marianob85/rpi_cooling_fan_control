@@ -1,8 +1,8 @@
-#!bin/sh
+#!/bin/bash
 
 env="venv"
 
-if [ -d $env" ]; then
+if [ -d "$env" ]; then
     rm -rf $env
 fi
 

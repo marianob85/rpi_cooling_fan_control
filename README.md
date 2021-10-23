@@ -12,3 +12,4 @@ Additional packages:
 * libsystemd-dev
 * rpi.gpio
 * python-gpiozero
+* python3-systemd
