@@ -8,3 +8,7 @@ The RPi has no hardware support for a fan but a simple fan controller can be wri
 
 See the [blog page for this project](https://hobbylad.wordpress.com/2021/07/24/raspberry-pi-cooling-fan-control/). 
 
+Additional packages: 
+* libsystemd-dev
+* rpi.gpio
+* python-gpiozero
