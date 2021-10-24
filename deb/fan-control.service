@@ -6,7 +6,6 @@ After=multi-user.target
 RestartSec=2s
 Type=simple
 User=pi
-WorkingDirectory=/home/pi
 ExecStart=/usr/bin/python /home/pi/fanctrl.py
 Restart=always
 

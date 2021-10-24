@@ -1,0 +1,5 @@
+{
+	"fan_port":"17",
+	"threshold":"65",
+	"hysteresis":"15"
+}

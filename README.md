@@ -13,3 +13,4 @@ Additional packages:
 * rpi.gpio
 * python-gpiozero
 * python3-systemd
+* python3-dev
