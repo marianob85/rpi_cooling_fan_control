@@ -1,0 +1,9 @@
+Architecture: all
+Depends:  
+Description: eLinkDisplayStatus built using CMake
+Maintainer: Mariusz Brzeski
+Package: fan-control
+Priority: optional
+Section: devel
+Version: 1.0.c68134d
+
