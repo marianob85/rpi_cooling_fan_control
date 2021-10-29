@@ -1,8 +1,22 @@
 #!/bin/sh
 set -e
 
+working_folder="/usr/share/fan-control"
+env=$working_folder/"venv"
+
+if [ -d "$env" ]; then
+    rm -rf $env
+fi
+
+python3 -m venv $env --system-site-packages
+. $env/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install -r $working_folder/requirements.txt
+deactivate
+
+
 if [ -d /run/systemd/system ]; then
 	systemctl --system daemon-reload >/dev/null || true
-    deb-systemd-invoke enable eLinkDisplayStatus.service >/dev/null
-	deb-systemd-invoke start eLinkDisplayStatus.service >/dev/null
+    deb-systemd-invoke enable fan-control.service >/dev/null
+	deb-systemd-invoke start fan-control.service >/dev/null
 fi
