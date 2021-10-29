@@ -93,9 +93,9 @@ Maintainer: Mariusz Brzeski <marianob85work@gmail.com>
 Homepage: manobit.com
 Description: Fan control service for raspberryPI" > ./\$TARGET_NAME/DEBIAN/control
 
-cp ./../deb/postinst ./../deb/postrm ./../deb/prerm ./\$TARGET_NAME/DEBIAN
-cp ./../fanctrl.py ./../requirements.txt ./\$TARGET_NAME
-cp ./../deb/fan-control.service ./\$TARGET_SERVICE_DIR
+cp ./deb/postinst ./deb/postrm ./deb/prerm ./\$TARGET_NAME/DEBIAN
+cp ./fanctrl.py ./requirements.txt ./\$TARGET_NAME
+cp ./deb/fan-control.service ./\$TARGET_SERVICE_DIR
 
 dpkg-deb --build --root-owner-group \$TARGET_NAME
 dpkg-name -o \$TARGET_NAME.deb
