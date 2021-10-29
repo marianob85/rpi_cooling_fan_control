@@ -1,16 +1,15 @@
 # raspberry-pi-cooling-fan-control
 
-##Raspberry Pi Cooling Fan Control
+Fork of original project: https://github.com/hobbylad/rpi_cooling_fan_control
 
-All Raspberry Pi models perform some sort of thermal management reducing performance to avoid overheating under heavy load. The temperature of the CPU core is monitored and clock speed reduced or “throttled” at certain limits. Fan cooling can prevent these limits being reached. This is even more important on “overclocked” systems were stability margin has been reduced. 
+Additional features: 
+* provided deb package
+* default configuration can be override by json file located in: /usr/local/etc/fan_control.json
 
-The RPi has no hardware support for a fan but a simple fan controller can be written in Python running as a “systemd” service.
-
-See the [blog page for this project](https://hobbylad.wordpress.com/2021/07/24/raspberry-pi-cooling-fan-control/). 
-
-Additional packages: 
-* libsystemd-dev
-* rpi.gpio
-* python-gpiozero
-* python3-systemd
-* python3-dev
+```json
+{
+	"fan_port":"17",
+	"threshold":"65",
+	"hysteresis":"15"
+}
+```
