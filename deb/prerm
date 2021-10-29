@@ -2,6 +2,13 @@
 set -e
 
 if [ -d /run/systemd/system ]; then
-    deb-systemd-invoke stop eLinkDisplayStatus.service >/dev/null
-	deb-systemd-invoke disable eLinkDisplayStatus.service >/dev/null
+    deb-systemd-invoke stop fan-control.service >/dev/null
+	deb-systemd-invoke disable fan-control.service >/dev/null
+fi
+
+working_folder="/usr/share/fan-control"
+env=$working_folder/"venv"
+
+if [ -d "$env" ]; then
+    rm -rf $env
 fi
