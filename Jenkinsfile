@@ -19,6 +19,9 @@ pipeline
 			agent{ label "linux/u18.04/base" }
 			steps {
  				checkout scm
+				script {
+					env.GITHUB_REPO = sh(script: 'basename $(git remote get-url origin) .git', returnStdout: true).trim()
+				}
 				createDeb( "all")
 				archiveArtifacts artifacts: '*.deb', onlyIfSuccessful: true,  fingerprint: true
 				stash includes: '*.deb', name: 'packages'
