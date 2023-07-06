@@ -4,7 +4,7 @@ import time
 import signal
 from datetime import datetime
 import logging
-from systemd.journal import JournaldLogHandler
+from systemd import journal
 import json
 
 FAN_PORT = 17
@@ -13,7 +13,7 @@ HYSTERESIS = 15
 CONF_FILE = "/usr/local/etc/fan_control.json"
 
 logger = logging.getLogger('fan')
-logger.addHandler(JournaldLogHandler())
+logger.addHandler(journal.JournaldLogHandler())
 logger.setLevel(logging.INFO)
 
 GPIO.setmode(GPIO.BCM)
