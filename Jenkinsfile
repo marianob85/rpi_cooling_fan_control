@@ -16,7 +16,7 @@ pipeline
 	}
 	stages {
 		stage('Create deb'){
-			agent{ label "linux/u18.04/base" }
+			agent{ label "linux/u24.04/base" }
 			steps {
  				checkout scm
 				script {
@@ -28,7 +28,7 @@ pipeline
 			}
 		}
 		stage('Nexus upload') {
-			agent{ label "linux/u18.04/base" }
+			agent{ label "linux/u24.04/base" }
 			when {
 				branch 'master'
 			}
@@ -50,7 +50,7 @@ pipeline
 			when {
 				buildingTag()
 			}
-			agent{ label "linux/u18.04/go:1.15.13" }
+			agent{ label "linux/u24.04/go:1.20.1" }
 			steps {
 				unstash 'packages'
 				sh '''
