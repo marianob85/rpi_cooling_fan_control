@@ -5,7 +5,6 @@ After=multi-user.target
 [Service]
 RestartSec=2s
 Type=simple
-User=pi
 ExecStart=/usr/share/fan-control/venv/bin/python3 /usr/share/fan-control/fanctrl.py
 Restart=always
 
