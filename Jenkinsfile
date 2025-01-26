@@ -91,7 +91,7 @@ Version: \$TARGET_VER.${BUILD_NUMBER}
 Section: base
 Priority: optional
 Architecture: ${arch}
-Depends: python3, python3-dev, python3-venv, python3-systemd, libsystemd-dev, python-gpiozero
+Depends: python3, python3-dev, python3-venv, python3-systemd, libsystemd-dev, python3-gpiozero
 Maintainer: Mariusz Brzeski <marianob85work@gmail.com>
 Homepage: manobit.com
 Description: Fan control service for raspberryPI" > ./\$TARGET_NAME/DEBIAN/control
