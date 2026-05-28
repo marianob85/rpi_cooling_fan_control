@@ -9,9 +9,11 @@ import json
 import sys
 import functools
 from fan_control_threshold import FanControlThreshold
+from fan_tacho_reader import FanTachoReader
 
 TYPE="threshold"
-CONF_FILE = "/usr/local/etc/fan_control.json"
+#CONF_FILE = "/usr/local/etc/fan_control.json"
+CONF_FILE = "./config/fan_control.json"
 
 logger = logging.getLogger('fan')
 logger.addHandler(journal.JournaldLogHandler())
@@ -22,16 +24,21 @@ def log(msg):
     logger.info(msg)
 
 
-def cleanup_and_exit(fan_reader, signum, frame):
+def cleanup_and_exit(fan_control, tacho_reader, signum, frame):
     log("Caught terminate signal.")
     
-    if fan_reader:
-        fan_reader.stop()
+    if fan_control:
+        fan_control.stop()
+        
+    if tacho_reader:
+        tacho_reader.stop()
         
     GPIO.cleanup()
     
     log("Exit")
     sys.exit(0)
+
+
 
 if __name__ == '__main__':
 
@@ -40,26 +47,24 @@ if __name__ == '__main__':
         with open(CONF_FILE) as json_file:
             config_items = json.load(json_file)
             log("Using local configuration file: {}".format(CONF_FILE))
-            
-            # Fallback w przypadku starej konfiguracji słownikowej
-            if isinstance(config_items, dict):
-                config_items = [config_items]
     except:
         pass
 
     selected_data = {}
+
+    requested_type = TYPE
+    if len(sys.argv) > 1:
+        requested_type = sys.argv[1]
+
+
     if config_items:
-        if len(sys.argv) > 1:
-            requested_type = sys.argv[1]
-            for item in config_items:
-                if item.get("type") == requested_type:
-                    selected_data = item
-                    break
-            
-            if not selected_data:
-                log("Warning: Configuration for type '{}' not found. Using empty/default.".format(requested_type))
-        else:
-            selected_data = config_items[0]
+        for item in config_items:
+            if item.get("type") == requested_type:
+                selected_data = item
+                break
+        
+        if not selected_data:
+            log("Warning: Configuration for type '{}' not found. Using empty/default.".format(requested_type))
 
     controlType = selected_data.get('type', TYPE)
 
@@ -77,7 +82,14 @@ if __name__ == '__main__':
     fan_control = controllers[controlType]()
     fan_control.start()
 
-    handler = functools.partial(cleanup_and_exit, fan_control)
+    tacho_reader = None
+    try:
+        tacho_reader = FanTachoReader(config_items)
+        tacho_reader.start()
+    except ValueError as e:
+        log("FanTachoReader skipped: {}".format(e))
+
+    handler = functools.partial(cleanup_and_exit, fan_control, tacho_reader)
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
     
