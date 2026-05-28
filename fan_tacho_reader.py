@@ -17,19 +17,23 @@ class FanTachoReader(FanControlBase):
                     tacho_config = item
                     break
 
+        self.is_configured = False
+        self.pulse_count = 0
+        self.current_rpm = 0
+        
         tacho_pin_val = tacho_config.get('tacho_pin')
         if tacho_pin_val is None or str(tacho_pin_val).lower() == "none":
-            raise ValueError("Tacho disabled by configuration.")
+            log("FanTachoReader skipped: Tacho disabled by configuration.")
+            return
 
         try:
             self.tacho_pin = int(tacho_pin_val)
         except (ValueError, TypeError):
-            raise ValueError(f"Invalid 'tacho_pin' value: {tacho_pin_val}")
-        self.pulse_count = 0
-        self.current_rpm = 0
-        
+            log(f"FanTachoReader skipped: Invalid 'tacho_pin' value: {tacho_pin_val}")
+            return
+            
+        self.is_configured = True
         self._running = False
-        
         self._lock = threading.Lock()
         
         self._sensor = Button(self.tacho_pin, pull_up=True)
@@ -49,9 +53,12 @@ class FanTachoReader(FanControlBase):
             
             # RPM = (pulses / 2) * 60 = pulses * 30
             self.current_rpm = pulses * 30
-            log( "rpm: {}".format(self.current_rpm))
+            #log( "rpm: {}".format(self.current_rpm))
 
     def start(self):
+        if not self.is_configured:
+            return
+            
         if not self._running:
             self._running = True
             self._thread = threading.Thread(target=self._measure_loop, daemon=True)
@@ -66,4 +73,6 @@ class FanTachoReader(FanControlBase):
             self._sensor.close()
 
     def get_rpm(self):
-        return self.current_rpm
+        if getattr(self, 'is_configured', False):
+            return self.current_rpm
+        return None

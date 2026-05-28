@@ -24,7 +24,7 @@ def log(msg):
     logger.info(msg)
 
 
-def cleanup_and_exit(fan_control, tacho_reader, signum, frame):
+def cleanup_and_exit(fan_control, tacho_reader, api_server, signum, frame):
     log("Caught terminate signal.")
     
     if fan_control:
@@ -32,6 +32,9 @@ def cleanup_and_exit(fan_control, tacho_reader, signum, frame):
         
     if tacho_reader:
         tacho_reader.stop()
+        
+    if api_server:
+        api_server.stop()
         
     log("Exit")
     sys.exit(0)
@@ -79,19 +82,13 @@ if __name__ == '__main__':
     fan_control = controllers[controlType]()
     fan_control.start()
 
-    tacho_reader = None
-    try:
-        tacho_reader = FanTachoReader(config_items)
-        tacho_reader.start()
-    except ValueError as e:
-        log("FanTachoReader skipped: {}".format(e))
+    tacho_reader = FanTachoReader(config_items)
+    tacho_reader.start()
 
-    server = HTTPServer(('0.0.0.0', API_PORT), FanAPIHandler)
-    
-    print(f"Wątek tacho uruchomiony.")
-    print(f"Serwer API nasłuchuje na http://0.0.0.0:{API_PORT}/api/tacho")
+    api_server = FanAPIHandler(config_items, tacho_reader)
+    api_server.start()
 
-    handler = functools.partial(cleanup_and_exit, fan_control, tacho_reader)
+    handler = functools.partial(cleanup_and_exit, fan_control, tacho_reader, api_server)
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)
     
