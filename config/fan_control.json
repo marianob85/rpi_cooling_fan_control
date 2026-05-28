@@ -1,5 +1,11 @@
-{
-	"fan_port":"17",
-	"threshold":"65",
-	"hysteresis":"10"
-}
+[
+	{
+		"type": "threshold",
+		"config": {
+			"fan_port": "17",
+			"tacho_port": "18",
+			"threshold": "65",
+			"hysteresis": "10"
+		}
+	}
+]
