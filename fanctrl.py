@@ -1,5 +1,4 @@
 from gpiozero import CPUTemperature
-import RPi.GPIO as GPIO
 import time
 import signal
 from datetime import datetime
@@ -10,6 +9,7 @@ import sys
 import functools
 from fan_control_threshold import FanControlThreshold
 from fan_tacho_reader import FanTachoReader
+from fan_api import FanAPIHandler
 
 TYPE="threshold"
 #CONF_FILE = "/usr/local/etc/fan_control.json"
@@ -33,15 +33,12 @@ def cleanup_and_exit(fan_control, tacho_reader, signum, frame):
     if tacho_reader:
         tacho_reader.stop()
         
-    GPIO.cleanup()
-    
     log("Exit")
     sys.exit(0)
 
 
 
 if __name__ == '__main__':
-
     config_items = []
     try:
         with open(CONF_FILE) as json_file:
@@ -88,6 +85,11 @@ if __name__ == '__main__':
         tacho_reader.start()
     except ValueError as e:
         log("FanTachoReader skipped: {}".format(e))
+
+    server = HTTPServer(('0.0.0.0', API_PORT), FanAPIHandler)
+    
+    print(f"Wątek tacho uruchomiony.")
+    print(f"Serwer API nasłuchuje na http://0.0.0.0:{API_PORT}/api/tacho")
 
     handler = functools.partial(cleanup_and_exit, fan_control, tacho_reader)
     signal.signal(signal.SIGINT, handler)

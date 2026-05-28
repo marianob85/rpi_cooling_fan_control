@@ -1,5 +1,5 @@
 from fan_control_base import FanControlBase
-import RPi.GPIO as GPIO
+from gpiozero import Button
 import threading
 import time
 from datetime import datetime
@@ -17,10 +17,14 @@ class FanTachoReader(FanControlBase):
                     tacho_config = item
                     break
 
-        if 'tacho_pin' not in tacho_config:
-            raise ValueError("Missing 'tacho_pin' in configuration.")
+        tacho_pin_val = tacho_config.get('tacho_pin')
+        if tacho_pin_val is None or str(tacho_pin_val).lower() == "none":
+            raise ValueError("Tacho disabled by configuration.")
 
-        self.tacho_pin = int(tacho_config['tacho_pin'])
+        try:
+            self.tacho_pin = int(tacho_pin_val)
+        except (ValueError, TypeError):
+            raise ValueError(f"Invalid 'tacho_pin' value: {tacho_pin_val}")
         self.pulse_count = 0
         self.current_rpm = 0
         
@@ -28,11 +32,10 @@ class FanTachoReader(FanControlBase):
         
         self._lock = threading.Lock()
         
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.tacho_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self.tacho_pin, GPIO.FALLING, callback=self._pulse_callback)
+        self._sensor = Button(self.tacho_pin, pull_up=True)
+        self._sensor.when_pressed = self._pulse_callback
 
-    def _pulse_callback(self, channel):
+    def _pulse_callback(self, *args):
         with self._lock:
             self.pulse_count += 1
 
@@ -58,7 +61,9 @@ class FanTachoReader(FanControlBase):
         self._running = False
         if hasattr(self, '_thread') and self._thread.is_alive():
             self._thread.join()
-        GPIO.remove_event_detect(self.tacho_pin)
+        if hasattr(self, '_sensor'):
+            self._sensor.when_pressed = None
+            self._sensor.close()
 
     def get_rpm(self):
         return self.current_rpm
