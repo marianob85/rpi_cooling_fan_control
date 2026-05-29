@@ -37,11 +37,16 @@ pipeline
 				sh '''
 					for f in *.deb; do
 						[ -e "$f" ] || continue
-						STATUS=$(curl -s -o /dev/null -w '%{http_code}' --insecure -u ${NEXUS_CREDS_USR}:${NEXUS_CREDS_PSW} -H "Content-Type: multipart/form-nedata" --data-binary @$f ${NEXUS_SERVER}/repository/ubuntu/)
-						if [ $STATUS -ne 201 ]; then
-							exit $STATUS
+						STATUS=$(curl -s -o /dev/null -w "%{http_code}" --insecure \
+								-u "${NEXUS_CREDS_USR}:${NEXUS_CREDS_PSW}" \
+								-X POST "${NEXUS_SERVER}/service/rest/v1/components?repository=debian" \
+								-H "accept: application/json" \
+								-F "apt.asset=@${f}")
+								
+						if [ "$STATUS" -ne 204 ]; then
+							exit 1
 						fi
-					done		
+					done
 				'''
 			}
 		}
