@@ -17,7 +17,7 @@ CONF_FILE = "/usr/local/etc/fan_control.json"
 #CONF_FILE = "./config/fan_control.json"
 
 logger = logging.getLogger('fan')
-logger.addHandler(journal.JournaldLogHandler())
+logger.addHandler(journal.JournalHandler())
 logger.setLevel(logging.INFO)
 
 def log(msg):

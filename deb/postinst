@@ -8,13 +8,6 @@ if [ -d "$env" ]; then
     rm -rf $env
 fi
 
-python3 -m venv $env --system-site-packages
-. $env/bin/activate
-python3 -m pip install --upgrade pip
-python3 -m pip install -r $working_folder/requirements.txt
-deactivate
-
-
 if [ -d /run/systemd/system ]; then
 	systemctl --system daemon-reload >/dev/null || true
     deb-systemd-invoke enable fan-control.service >/dev/null

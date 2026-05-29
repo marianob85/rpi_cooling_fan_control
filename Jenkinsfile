@@ -96,13 +96,13 @@ Version: \$TARGET_VER.${BUILD_NUMBER}
 Section: base
 Priority: optional
 Architecture: ${arch}
-Depends: python3, python3-dev, python3-venv, python3-systemd, libsystemd-dev, python3-gpiozero
+Depends: python3, python3-systemd, python3-gpiozero
 Maintainer: Mariusz Brzeski <marianob85work@gmail.com>
 Homepage: manobit.com
 Description: Fan control service for raspberryPI" > ./\$TARGET_NAME/DEBIAN/control
 
 cp ./deb/postinst ./deb/postrm ./deb/prerm ./\$TARGET_NAME/DEBIAN
-cp ./*.py ./requirements.txt ./\$TARGET_DATA_DIR
+cp ./*.py ./\$TARGET_DATA_DIR
 cp ./deb/fan-control.service ./\$TARGET_SERVICE_DIR
 
 dpkg-deb --build --root-owner-group \$TARGET_NAME

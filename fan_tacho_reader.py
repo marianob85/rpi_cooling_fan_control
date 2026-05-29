@@ -1,5 +1,5 @@
 from fan_control_base import FanControlBase
-from gpiozero import Button
+from gpiozero import DigitalInputDevice
 import threading
 import time
 from datetime import datetime
@@ -36,8 +36,8 @@ class FanTachoReader(FanControlBase):
         self._running = False
         self._lock = threading.Lock()
         
-        self._sensor = Button(self.tacho_pin, pull_up=True)
-        self._sensor.when_pressed = self._pulse_callback
+        self._sensor = DigitalInputDevice(self.tacho_pin, pull_up=True)
+        self._sensor.when_activated = self._pulse_callback
 
     def _pulse_callback(self, *args):
         with self._lock:
@@ -69,7 +69,7 @@ class FanTachoReader(FanControlBase):
         if hasattr(self, '_thread') and self._thread.is_alive():
             self._thread.join()
         if hasattr(self, '_sensor'):
-            self._sensor.when_pressed = None
+            self._sensor.when_activated = None
             self._sensor.close()
 
     def get_rpm(self):
