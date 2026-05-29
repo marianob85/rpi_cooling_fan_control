@@ -13,8 +13,8 @@ from fan_tacho_reader import FanTachoReader
 from fan_api import FanAPIHandler
 
 TYPE="threshold"
-#CONF_FILE = "/usr/local/etc/fan_control.json"
-CONF_FILE = "./config/fan_control.json"
+CONF_FILE = "/usr/local/etc/fan_control.json"
+#CONF_FILE = "./config/fan_control.json"
 
 logger = logging.getLogger('fan')
 logger.addHandler(journal.JournaldLogHandler())
