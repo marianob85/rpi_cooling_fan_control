@@ -12,3 +12,8 @@ class FanControlBase(ABC):
     def stop(self):
         """Stops the fan control."""
         pass
+
+    @abstractmethod
+    def get_state(self):
+        """Returns the current state of the fan control."""
+        pass

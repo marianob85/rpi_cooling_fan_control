@@ -64,3 +64,8 @@ class FanControlThreshold(FanControlBase):
             self._thread.join()
         if hasattr(self, '_fan'):
             self._fan.close()
+
+    def get_state(self):
+        if not hasattr(self, '_fan'):
+            return {}
+        return {"is_on": bool(self._fan.value)}

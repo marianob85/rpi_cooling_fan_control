@@ -5,8 +5,9 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 class FanAPIHandler:
     """Class managing the HTTP server for the API"""
     
-    def __init__(self, config_items, tacho_reader):
+    def __init__(self, config_items, tacho_reader, fan_control=None):
         self.tacho_reader = tacho_reader
+        self.fan_control = fan_control
         self.api_port = None
         
         if config_items:
@@ -38,6 +39,10 @@ class FanAPIHandler:
                         rpm = self.tacho_reader.get_rpm()
                         if rpm is not None:
                             data["rpm"] = rpm
+                            
+                    if self.fan_control:
+                        if hasattr(self.fan_control, 'get_state'):
+                            data.update(self.fan_control.get_state())
                             
                     response_json = json.dumps(data)
                     req_self.wfile.write(response_json.encode('utf-8'))

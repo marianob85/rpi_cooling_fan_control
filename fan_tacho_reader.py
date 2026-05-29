@@ -76,3 +76,6 @@ class FanTachoReader(FanControlBase):
         if getattr(self, 'is_configured', False):
             return self.current_rpm
         return None
+    
+    def get_state(self):
+        return {}

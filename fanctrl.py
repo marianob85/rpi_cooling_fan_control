@@ -8,6 +8,7 @@ import json
 import sys
 import functools
 from fan_control_threshold import FanControlThreshold
+from fan_control_pwm import FanControlPWM
 from fan_tacho_reader import FanTachoReader
 from fan_api import FanAPIHandler
 
@@ -38,8 +39,6 @@ def cleanup_and_exit(fan_control, tacho_reader, api_server, signum, frame):
         
     log("Exit")
     sys.exit(0)
-
-
 
 if __name__ == '__main__':
     config_items = []
@@ -73,7 +72,7 @@ if __name__ == '__main__':
 
     controllers = {
         "threshold": lambda: FanControlThreshold(selected_data.get('config', {})),
-        # "other": lambda: OtherClass(selected_data.get('config', {}))
+        "pwm": lambda: FanControlPWM(selected_data.get('config', {}))
     }
 
     if controlType not in controllers:
@@ -85,7 +84,7 @@ if __name__ == '__main__':
     tacho_reader = FanTachoReader(config_items)
     tacho_reader.start()
 
-    api_server = FanAPIHandler(config_items, tacho_reader)
+    api_server = FanAPIHandler(config_items, tacho_reader, fan_control)
     api_server.start()
 
     handler = functools.partial(cleanup_and_exit, fan_control, tacho_reader, api_server)
