@@ -51,19 +51,28 @@ if __name__ == '__main__':
 
     selected_data = {}
 
-    requested_type = TYPE
     if len(sys.argv) > 1:
         requested_type = sys.argv[1]
-
-
-    if config_items:
-        for item in config_items:
-            if item.get("type") == requested_type:
-                selected_data = item
-                break
+        if config_items:
+            for item in config_items:
+                if item.get("type") == requested_type:
+                    selected_data = item
+                    break
         
         if not selected_data:
             log("Warning: Configuration for type '{}' not found. Using empty/default.".format(requested_type))
+    else:
+        if config_items:
+            if len(config_items) == 1:
+                selected_data = config_items[0]
+            else:
+                for item in config_items:
+                    if item.get("type") == TYPE:
+                        selected_data = item
+                        break
+                
+                if not selected_data:
+                    selected_data = config_items[0]
 
     controlType = selected_data.get('type', TYPE)
 
